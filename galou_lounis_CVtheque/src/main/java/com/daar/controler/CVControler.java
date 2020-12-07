@@ -68,9 +68,10 @@ public class CVControler {
 	}
 	
 @GetMapping("CV/search")
-public String search(@RequestParam ("mots") String mots) {
+public String search(@RequestParam ("mots") String[] mots) {
 	
 	try {
+		System.out.println(mots);
 		String json = new Gson().toJson(this.elasticService.search(mots));
 		System.out.println(json);
 		return json;

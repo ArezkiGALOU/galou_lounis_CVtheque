@@ -3,6 +3,7 @@ import axios, { post } from 'axios';
 import ReactFileReader from 'react-file-reader';
 import Button from 'react-bootstrap/Button';
 import './App.css';
+import Affichage from './Affichage';
 class SubmitComponent extends Component{
 
   
@@ -10,25 +11,32 @@ class SubmitComponent extends Component{
     super(props);
     this.state ={
       file:null,
-      affich: ""
+      cvs:[],
+      b:true,
+      nbcvs : 0,
+      current: ""
     }
     this.onFormSubmit = this.onFormSubmit.bind(this)
     this.onChange = this.onChange.bind(this)
     this.fileUpload = this.fileUpload.bind(this)
     this.submitsearch=this.submitsearch.bind(this);
+    this.clear=this.clear.bind(this);
   }
 
-  submitsearch(e){
-    
-    axios.get("http://localhost:8080/api/CV/search?mots=java").then((res)=>{
-      if(res){
-        console.log(res.data);
-      }else{
-        console.log("abouche")
-      }
-    },err=>{
-      console.log(err)
+  submitsearch (){
+ 
+    axios.get("http://localhost:8080/api/CV/search?mots="+this.refs.txt.value.split(" ")).then((res)=>{
+      res.data.map( (c)=> {
+        this.addElement(c);
+      })
+      this.setState({current:"search"})
     });
+    this.setState({b:!this.state.b})
+  }
+
+  addElement(c){
+    this.state.cvs.push(c);
+
   }
   onFormSubmit(e){
     e.preventDefault()
@@ -37,6 +45,9 @@ class SubmitComponent extends Component{
       alert("cv envoyer avec succes");
       
     })
+  }
+  clear(e){
+    this.setState({current : "",cvs:[]})
   }
 
   onChange(e) {
@@ -68,15 +79,33 @@ class SubmitComponent extends Component{
       </div>
        
        <div className="monbloc2">
-       <form onSubmit={this.submitsearch}>
+     
        <h1>Search CV</h1>
        <label>
-       <input type="text" ref="whatTosearch" name="name" />
+       <input type="text"  ref="txt" name="name" />
       </label>
-      <Button type="submit" variant="dark" >Search</Button>
-      </form>
+      <input  type="submit"
+                                value=" Search "
+                                class="searchsubmit"
+                                onClick={this.submitsearch}/>
+      <input  type="submit"
+                                value=" Clear "
+                                class="searchsubmit"
+                                onClick={this.clear}/>
        </div>
       
+       
+        { 
+        this.state.current==="search" ?  <ul><h3>La liste des CVs qui match: <br/> </h3>{this.state.cvs.map( (c) => <li><div>ID : {c["id"]}  {c["nom"]} </div></li>
+                                                     )} </ul>: <div>
+                                                       
+                                                      Vous avez pas effectuer de recherche
+                                                      
+                                                     </div>
+          }
+
+        
+
       </div>
    )
   }
@@ -86,3 +115,5 @@ class SubmitComponent extends Component{
 }
 
 export default SubmitComponent;
+
+

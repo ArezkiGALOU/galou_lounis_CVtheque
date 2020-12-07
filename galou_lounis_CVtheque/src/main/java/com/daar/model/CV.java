@@ -52,5 +52,9 @@ public class CV {
 	public void setContentBin(byte[] contentBin) {
 		this.contentBin = contentBin;
 	}
-	
+	@Override
+	public boolean equals(Object obj) {
+		CVelastic b = (CVelastic) obj;
+		return this.id==b.getId();
+	}
 }
